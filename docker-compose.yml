@@ -1,0 +1,9 @@
+version: '3'
+
+services:
+  react-native-app:
+    image: ghcr.io/your-username/your-repo-name:latest
+    ports:
+      - "19000:19000"
+    restart: always
+    # Додайте інші необхідні налаштування, такі як змінні середовища, томи і т.д.
