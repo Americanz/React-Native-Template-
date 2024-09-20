@@ -51,7 +51,8 @@ export type AppStackParamList = {
   ProductList: undefined;
   FilterScreen: undefined;
   CategoriesScreen: undefined;
-  CalendarScreen:undefined
+  CalendarScreen: undefined;
+  Scaner: undefined;
 };
 
 /**
@@ -116,6 +117,7 @@ const AppStack = observer(function AppStack() {
             component={Screens.CalendarScreen}
           />
           <Stack.Screen name="FilterScreen" component={Screens.FilterScreen} />
+          <Stack.Screen name="Scaner" component={Screens.ScanerScreen} />
         </>
       ) : (
         <>

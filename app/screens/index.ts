@@ -11,11 +11,16 @@ export * from "./ErrorScreen/ErrorBoundary";
 
 export * from "./_Barcode/BarcodeScannerScreen";
 export * from "./_Barcode/BarcodeListScreen";
+export * from "./_Barcode/ScanerScreen";
+
 export * from "./_Settings/SettingsScreen";
 export * from "./_Settings/EditProfileScreen";
 export * from "./_Settings/EditUiTabScreen";
+
 export * from "./_Product/ProductListScreen";
 export * from "./_Product/ProductDetail";
 export * from "./_Product/FilterScreen";
 export * from "./_Product/CategoriesScreen";
+export * from "./_Product/ProductScreen";
+
 export * from "./_Calendar/CalendarScreen";

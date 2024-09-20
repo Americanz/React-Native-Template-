@@ -1,5 +1,4 @@
-// models/ProductStore.ts
-import { Instance, SnapshotOut, types } from "mobx-state-tree";
+import { Instance, SnapshotOut, types, flow } from "mobx-state-tree";
 import { ProductModel } from "../../types/productTypes";
 import { withSetPropAction } from "../helpers/withSetPropAction";
 import { dbOperations } from "../../db/dbOperations";
@@ -58,14 +57,16 @@ export const ProductStoreModel = types
     setFilters(filters: Record<string, any>) {
       store.setProp("filters", { ...store.filters, ...filters });
       store.setCurrentPage(1);
-      store.fetchProducts();
+      this.fetchProducts();
     },
-    async fetchProducts(append: boolean = false) {
-      this.setLoading(true);
-      this.clearError();
+
+    // Використання flow для асинхронних дій
+    fetchProducts: flow(function* (append: boolean = false) {
+      store.setLoading(true);
+      store.clearError();
       try {
         const offset = (store.currentPage - 1) * store.pageSize;
-        const result = await dbOperations.getProducts(store.pageSize, offset, {
+        const result = yield dbOperations.getProducts(store.pageSize, offset, {
           ...store.filters,
           categoryId: store.selectedCategoryId,
         });
@@ -77,53 +78,55 @@ export const ProductStoreModel = types
         store.setProp("total", result.total);
       } catch (error) {
         console.error("Error fetching products from database:", error);
-        this.setError("Не вдалося завантажити продукти з бази даних");
+        store.setError("Не вдалося завантажити продукти з бази даних");
       } finally {
-        this.setLoading(false);
+        store.setLoading(false);
       }
-    },
+    }),
 
-    async fetchProductById(productId: number) {
-      this.setLoading(true);
-      this.clearError();
+    fetchProductById: flow(function* (productId: number) {
+      store.setLoading(true);
+      store.clearError();
       try {
-        const product = await dbOperations.getProductById(productId);
+        const product = yield dbOperations.getProductById(productId);
         if (product) {
           store.setProp("selectedProduct", product);
         } else {
-          this.setError(`Продукт з ID ${productId} не знайдено`);
+          store.setError(`Продукт з ID ${productId} не знайдено`);
         }
       } catch (error) {
         console.error(`Error fetching product with ID ${productId}:`, error);
-        this.setError(
+        store.setError(
           `Не вдалося завантажити продукт з ID ${productId}: ${error.message}`
         );
       } finally {
-        this.setLoading(false);
+        store.setLoading(false);
       }
-    },
+    }),
 
-    async fetchCategories() {
-      this.setLoading(true);
-      this.clearError();
+    fetchCategories: flow(function* () {
+      store.setLoading(true);
+      store.clearError();
       try {
-        const categoriesData = await dbOperations.getCategories();
+        const categoriesData = yield dbOperations.getCategories();
         store.setProp("categories", categoriesData);
       } catch (error) {
         console.error("Error fetching categories from database:", error);
-        this.setError("Не вдалося завантажити категорії з бази даних");
+        store.setError("Не вдалося завантажити категорії з бази даних");
       } finally {
-        this.setLoading(false);
+        store.setLoading(false);
       }
-    },
+    }),
+
     setSelectedCategoryId(id: number | null) {
-      store.selectedCategoryId = id;
-      store.currentPage = 1;
+      store.setProp("selectedCategoryId", id);
+      store.setProp("currentPage", 1);
       this.fetchProducts();
     },
 
     setCurrentPage(page: number) {
       store.setProp("currentPage", page);
+      this.fetchProducts();
     },
   }));
 

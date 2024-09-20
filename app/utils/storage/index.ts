@@ -1,2 +1,2 @@
 export * from "./storage";
-export { barcodeStore } from "./BarcodeStore";
+export { barcodeStore } from "./_barcode/BarcodeStore";

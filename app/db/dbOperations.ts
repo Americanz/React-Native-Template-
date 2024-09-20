@@ -1,7 +1,7 @@
 import { getDatabase } from "../db/dataManager";
 import * as schema from "./schema";
-import { sql, eq, desc } from "drizzle-orm";
-// import { Product, Category, ProductAttribute } from "../types/product";
+import { sql, eq, desc, like, and } from "drizzle-orm";
+import { SQLiteSelectBase } from "drizzle-orm/sqlite-core/query-builders/select";
 
 // Product = schema.Product
 type Product = typeof schema.product.$inferSelect;
@@ -22,19 +22,34 @@ const mapApiDataToDbSchema = (
 };
 
 export const dbOperations = {
-  getProducts: async (limit: number, offset: number) => {
+  getProducts: async (limit: number, offset: number, filters: any) => {
     const db = getDatabase();
 
-
-    const products = await db
+    let query: SQLiteSelectBase = db
       .select()
       .from(schema.product)
       .leftJoin(
         schema.category,
         eq(schema.product.categoryId, schema.category.id)
-      )
-      .limit(limit)
-      .offset(offset);
+      );
+
+    const whereConditions = [];
+
+    if (filters.categoryId) {
+      whereConditions.push(eq(schema.product.categoryId, filters.categoryId));
+    }
+
+    if (filters.searchQuery) {
+      whereConditions.push(
+        like(schema.product.name, `%${filters.searchQuery}%`)
+      );
+    }
+
+    if (whereConditions.length > 0) {
+      query = query.where(and(...whereConditions));
+    }
+
+    const products = await query.limit(limit).offset(offset);
 
     const [countResult] = await db
       .select({ count: sql`count(*)` })

@@ -1,5 +1,5 @@
 import { makeAutoObservable, runInAction } from "mobx";
-import { load, save } from "./storage";
+import { load, save } from "../storage";
 
 export interface BarcodeData {
   type: string;

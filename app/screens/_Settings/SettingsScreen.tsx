@@ -1,11 +1,12 @@
 import React from "react";
 import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
-import { Screen, Text, Icon, Card, Toggle, Button } from "../../components";
+import { Screen, Text, Icon, Card } from "../../components";
 import { DemoTabScreenProps } from "../../navigators/DemoNavigator";
 import { colors, spacing } from "../../theme";
 import { observer } from "mobx-react-lite";
-import { userStore } from "../../utils/storage/UserStore";
+import { userStore } from "../../utils/storage/_user/UserStore";
 import { useStores } from "../../models";
+import { ThemeToggle } from "../../theme/_ThemeProvider/ThemeToggle";
 
 interface SettingItemProps {
   icon: string;
@@ -19,13 +20,18 @@ const SettingItem = ({
   label,
   onPress,
   rightElement,
-}: SettingItemProps) => (
-  <TouchableOpacity style={$settingItem} onPress={onPress}>
-    <Icon icon={icon} size={24} />
-    <Text text={label} style={$settingLabel} />
-    {rightElement || <Icon icon="caretRight" size={24} />}
-  </TouchableOpacity>
-);
+}: SettingItemProps) => {
+  return (
+    <TouchableOpacity
+      style={[$settingItem, { borderBottomColor: colors.border }]}
+      onPress={onPress}
+    >
+      <Icon icon={icon} size={24} color={colors.text} />
+      <Text text={label} style={[$settingLabel, { color: colors.text }]} />
+      {rightElement || <Icon icon="caretRight" size={24} color={colors.text} />}
+    </TouchableOpacity>
+  );
+};
 
 export const SettingsScreen: React.FC<DemoTabScreenProps<
   "Settings"
@@ -37,33 +43,43 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
   return (
     <Screen
       preset="scroll"
-      contentContainerStyle={$container}
+      contentContainerStyle={[
+        $container,
+        { backgroundColor: colors.background },
+      ]}
       safeAreaEdges={["top"]}
     >
-      <View style={$header}>
-        <Icon icon="back" onPress={() => navigation.goBack()} />
-        <Text text="Settings" preset="heading" style={$title} />
+      <View style={[$header, { borderBottomColor: colors.border }]}>
+        <Text
+          text="Settings"
+          preset="heading"
+          style={[$title, { color: colors.text }]}
+        />
       </View>
+
+      <ThemeToggle />
 
       <TouchableOpacity
         style={$userInfo}
         onPress={() => navigation.navigate("EditProfile")}
       >
-        <Icon icon="community" size={50} />
+        <Icon icon="community" size={50} color={colors.tint} />
         <View style={$userTextContainer}>
           <Text
             text={userStore.userInfo.name || "Set your name"}
             preset="subheading"
+            style={{ color: colors.text }}
           />
           <Text
             text={userStore.userInfo.phoneNumber || "Set your phone number"}
+            style={{ color: colors.textDim }}
           />
         </View>
-        <Text text="Edit" style={$editButton} />
+        <Text text="Edit" style={[$editButton, { color: colors.tint }]} />
       </TouchableOpacity>
 
       <Card
-        style={$card}
+        style={[$card, { backgroundColor: colors.background }]}
         ContentComponent={
           <View style={$cardText}>
             <SettingItem
@@ -85,9 +101,13 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
         }
       />
 
-      <Text text="Settings" preset="subheading" style={$sectionTitle} />
+      <Text
+        text="Settings"
+        preset="subheading"
+        style={[$sectionTitle, { color: colors.text }]}
+      />
       <Card
-        style={$card}
+        style={[$card, { backgroundColor: colors.background }]}
         ContentComponent={
           <View style={$cardText}>
             <SettingItem
@@ -106,20 +126,20 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
               icon="globe"
               label="Language"
               rightElement={
-                <Toggle
-                  variant="switch"
-                  value={true}
-                  onValueChange={() => {}}
-                  label="Ukr"
-                />
+                <Text text="English" style={{ color: colors.textDim }} />
               }
             />
           </View>
         }
       />
-      <Text text="Help" preset="subheading" style={$sectionTitle} />
+
+      <Text
+        text="Help"
+        preset="subheading"
+        style={[$sectionTitle, { color: colors.text }]}
+      />
       <Card
-        style={$card}
+        style={[$card, { backgroundColor: colors.background }]}
         ContentComponent={
           <View style={$cardText}>
             <SettingItem icon="question" label="FAQ" />
@@ -127,8 +147,14 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
           </View>
         }
       />
+
       <View style={$buttonContainer}>
-        <Button style={$button} tx="common.logOut" onPress={logout} />
+        <TouchableOpacity
+          style={[$button, { backgroundColor: colors.error }]}
+          onPress={logout}
+        >
+          <Text tx="common.logOut" style={{ color: colors.background }} />
+        </TouchableOpacity>
       </View>
     </Screen>
   );
@@ -158,6 +184,7 @@ const $card: ViewStyle = {
 const $cardText: TextStyle = {
   marginBottom: spacing.xxs,
 };
+
 const $userInfo: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
@@ -170,7 +197,7 @@ const $userTextContainer: ViewStyle = {
 };
 
 const $editButton: TextStyle = {
-  color: colors.tint,
+  // color is set dynamically
 };
 
 const $settingItem: ViewStyle = {
@@ -179,12 +206,13 @@ const $settingItem: ViewStyle = {
   paddingVertical: spacing.md,
   paddingHorizontal: spacing.md,
   borderBottomWidth: 1,
-  borderBottomColor: colors.palette.neutral300,
+  // borderBottomColor is set dynamically
 };
 
 const $settingLabel: TextStyle = {
   flex: 1,
   marginLeft: spacing.md,
+  // color is set dynamically
 };
 
 const $sectionTitle: TextStyle = {
@@ -197,4 +225,8 @@ const $buttonContainer: ViewStyle = {
 
 const $button: ViewStyle = {
   marginBottom: spacing.xs,
+  paddingVertical: spacing.sm,
+  paddingHorizontal: spacing.md,
+  borderRadius: 4,
+  alignItems: "center",
 };

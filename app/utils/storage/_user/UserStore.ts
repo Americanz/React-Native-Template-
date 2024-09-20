@@ -4,7 +4,7 @@ import { load, save } from "../storage";
 export interface UserInfo {
   name: string;
   phoneNumber: string;
-  // Додайте інші поля, які вам потрібні
+  theme: "light" | "dark" | "system";
 }
 
 const USER_STORAGE_KEY = "user_info";
@@ -13,6 +13,7 @@ class UserStore {
   userInfo: UserInfo = {
     name: "",
     phoneNumber: "",
+    theme: "system",
   };
 
   constructor() {
@@ -25,12 +26,17 @@ class UserStore {
     this.saveUserInfo();
   }
 
+  setTheme(theme: "light" | "dark" | "system") {
+    this.userInfo.theme = theme;
+    this.saveUserInfo();
+  }
+
   private async loadUserInfo() {
     try {
       const storedInfo = await load(USER_STORAGE_KEY);
       if (storedInfo) {
         runInAction(() => {
-          this.userInfo = storedInfo as UserInfo;
+          this.userInfo = { ...this.userInfo, ...(storedInfo as UserInfo) };
         });
       }
     } catch (error) {
@@ -47,14 +53,14 @@ class UserStore {
   }
 }
 
-// Клас для управління інтерфейсом (UI)
 class UIStore {
   tabStatuses = {
     DemoShowroom: true,
-    DemoCommunity: true,
-    DemoPodcastList: true,
-    DemoDebug: true,
+    DemoCommunity: false,
+    DemoPodcastList: false,
+    DemoDebug: false,
     BarcodeScanner: true,
+    ProductScreen: true,
     Settings: true,
   };
 
@@ -62,17 +68,14 @@ class UIStore {
     makeAutoObservable(this);
   }
 
-  // Метод для перемикання видимості конкретного табу
   toggleTabVisibility(tabName: keyof typeof this.tabStatuses) {
     this.tabStatuses[tabName] = !this.tabStatuses[tabName];
   }
 
-  // Метод для явного показу табу
   showTab(tabName: keyof typeof this.tabStatuses) {
     this.tabStatuses[tabName] = true;
   }
 
-  // Метод для явного приховання табу
   hideTab(tabName: keyof typeof this.tabStatuses) {
     this.tabStatuses[tabName] = false;
   }

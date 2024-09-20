@@ -2,7 +2,7 @@ import React from "react";
 import { ViewStyle, View } from "react-native";
 import { Text } from "../Text";
 import { spacing } from "../../theme";
-import { barcodeStore } from "../../utils/storage/BarcodeStore";
+import { barcodeStore } from "../../utils/storage/_barcode/BarcodeStore";
 import { observer } from "mobx-react-lite";
 
 export const ScannedCount = observer(function ScannedCount() {

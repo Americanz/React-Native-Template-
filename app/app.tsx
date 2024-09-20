@@ -33,6 +33,7 @@ import * as storage from "./utils/storage";
 import { customFontsToLoad } from "./theme";
 import Config from "./config";
 import { useDatabase } from "./db/hooks/useDatabase";
+import { ThemeProvider } from "./theme/colors";
 
 export const NAVIGATION_PERSISTENCE_KEY = "NAVIGATION_STATE";
 
@@ -69,11 +70,7 @@ interface AppProps {
 function App(props: AppProps) {
   const { hideSplashScreen } = props;
 
-  const {
-    db,
-    isLoading: isDatabaseLoading,
-    error: databaseError,
-  } = useDatabase();
+  const { isLoading: isDatabaseLoading, error: databaseError } = useDatabase();
 
   const {
     initialNavigationState,
@@ -120,15 +117,17 @@ function App(props: AppProps) {
 
   // otherwise, we're ready to render the app
   return (
-    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
-      <ErrorBoundary catchErrors={Config.catchErrors}>
-        <AppNavigator
-          linking={linking}
-          initialState={initialNavigationState}
-          onStateChange={onNavigationStateChange}
-        />
-      </ErrorBoundary>
-    </SafeAreaProvider>
+    <ThemeProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <ErrorBoundary catchErrors={Config.catchErrors}>
+          <AppNavigator
+            linking={linking}
+            initialState={initialNavigationState}
+            onStateChange={onNavigationStateChange}
+          />
+        </ErrorBoundary>
+      </SafeAreaProvider>
+    </ThemeProvider>
   );
 }
 

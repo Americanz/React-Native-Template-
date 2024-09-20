@@ -4,7 +4,7 @@ import { Button, Screen, Header, Toggle } from "../../components";
 import { spacing } from "../../theme";
 import { observer } from "mobx-react-lite";
 import { AppStackScreenProps } from "../../navigators";
-import { uiStore } from "../../utils/storage/UserStore";
+import { uiStore } from "../../utils/storage/_user/UserStore";
 import { DemoDivider } from "../DemoShowroomScreen/DemoDivider";
 
 interface EditUiTabScreenProps extends AppStackScreenProps<"EditUiTab"> {}
@@ -67,6 +67,15 @@ export const EditUiTabScreen: FC<EditUiTabScreenProps> = observer(
         />
 
         <DemoDivider size={24} />
+        <Toggle
+          variant="switch"
+          switchAccessibilityMode="icon"
+          value={uiStore.tabStatuses.ProductScreen}
+          onValueChange={() => uiStore.toggleTabVisibility("ProductScreen")}
+          label="Show tab Product Screen"
+        />
+
+        <DemoDivider size={24} />
 
         <Toggle
           variant="switch" // Вказуємо, що використовуємо switch
@@ -74,8 +83,7 @@ export const EditUiTabScreen: FC<EditUiTabScreenProps> = observer(
           value={uiStore.tabStatuses.Settings} // Прив'язуємо до стейту у сторі
           onValueChange={() => uiStore.toggleTabVisibility("Settings")} // Перемикаємо значення видимості таб-бару
           label="Show tab Settings" // Текст біля перемикача
-         />
-
+        />
       </Screen>
     );
   }

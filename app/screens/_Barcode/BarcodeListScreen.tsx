@@ -4,9 +4,8 @@ import { Button, Screen, Text, Card, Header } from "../../components";
 import { AppStackScreenProps } from "../../navigators";
 import { spacing } from "../../theme";
 import { observer } from "mobx-react-lite";
-import { barcodeStore } from "../../utils/storage/BarcodeStore";
+import { barcodeStore } from "../../utils/storage/_barcode/BarcodeStore";
 import { QuantityControl } from "../../components/_Scanned/QuantityControl";
-
 
 interface BarcodeListProps extends AppStackScreenProps<"BarcodeList"> {}
 
@@ -21,7 +20,6 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
         barcodeStore.updateBarcodeQuantity(index, newQuantity);
       }
     };
-
 
     const confirmClearBarcodes = () => {
       Alert.alert(
@@ -99,6 +97,8 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
           onPress={confirmClearBarcodes}
           style={$button}
         />
+
+       
       </Screen>
     );
   }

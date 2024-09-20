@@ -14,12 +14,14 @@ import {
   DemoShowroomScreen,
   DemoDebugScreen,
   BarcodeScannerScreen,
+  ProductScreen,
 } from "../screens";
 import { DemoPodcastListScreen } from "../screens/DemoPodcastListScreen";
 import { colors, spacing, typography } from "../theme";
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator";
 import { SettingsScreen } from "../screens/_Settings/SettingsScreen";
-import { uiStore } from "../utils/storage/UserStore";
+import { uiStore } from "../utils/storage/_user/UserStore";
+import { MD3Colors } from "react-native-paper";
 
 export type DemoTabParamList = {
   DemoCommunity: undefined;
@@ -28,6 +30,7 @@ export type DemoTabParamList = {
   DemoPodcastList: undefined;
   BarcodeScanner: undefined;
   Settings: undefined;
+  ProductScreen: undefined;
 };
 
 /**
@@ -80,7 +83,7 @@ export function DemoNavigator() {
           ),
           tabBarButton: uiStore.tabStatuses.DemoShowroom
             ? undefined
-            : () => null, // Приховуємо таб-бар кнопку
+            : () => null,
         }}
       />
 
@@ -144,12 +147,30 @@ export function DemoNavigator() {
           tabBarLabel: "Barcode",
           tabBarIcon: ({ focused }) => (
             <Icon
-              icon="view"
+              icon="barcode"
               color={focused ? colors.tint : undefined}
               size={30}
             />
           ),
           tabBarButton: uiStore.tabStatuses.BarcodeScanner
+            ? undefined
+            : () => null,
+        }}
+      />
+
+      <Tab.Screen
+        name="ProductScreen"
+        component={ProductScreen}
+        options={{
+          tabBarLabel: "Product",
+          tabBarIcon: ({ focused }) => (
+            <Icon
+              icon="view_list"
+              color={focused ? colors.tint : undefined}
+              size={30}
+            />
+          ),
+          tabBarButton: uiStore.tabStatuses.ProductScreen
             ? undefined
             : () => null,
         }}
