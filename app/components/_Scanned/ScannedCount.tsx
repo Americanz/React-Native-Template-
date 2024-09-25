@@ -9,7 +9,7 @@ export const ScannedCount = observer(function ScannedCount() {
   return (
     <View style={$container}>
       <Text
-        text={`Scanned barcodes: ${barcodeStore.barcodes.length}`}
+        text={`Scanned barcode: ${barcodeStore.barcode.length}`}
         preset="subheading"
       />
     </View>

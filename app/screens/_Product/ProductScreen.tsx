@@ -1,14 +1,19 @@
 import React from "react";
 import { ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
-import { Button, Screen, Text } from "../../components";
-import { DemoTabScreenProps } from "../../navigators/DemoNavigator";
-import { spacing } from "../../theme";
+import { Button, Screen, Text } from "app/components";
+import { DemoTabScreenProps } from "app/navigators/DemoNavigator";
+import { spacing } from "app/theme";
+import { syncService } from "app/db/sync/syncService";
 
-interface ProductScreenProps extends DemoTabScreenProps<"ProductScreen"> {}
+interface ProductScreenProps extends DemoTabScreenProps<"ProductTab"> {}
 
 export const ProductScreen: React.FC<ProductScreenProps> = observer(
   function ProductScreen({ navigation }) {
+    const handleRefresh = () => {
+      syncService.syncAll();
+    };
+
     return (
       <Screen
         preset="scroll"
@@ -28,7 +33,7 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           text="Scan Barcode"
           style={$button}
           preset="default"
-          onPress={() => navigation.navigate("BarcodeScanner")}
+          onPress={() => navigation.navigate("BarcodeList")}
         />
 
         <Button
@@ -36,13 +41,6 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           style={$button}
           preset="default"
           onPress={() => navigation.navigate("CategoriesScreen")}
-        />
-
-        <Button
-          text="Add New Product"
-          style={$button}
-          preset="default"
-          onPress={() => navigation.navigate("AddProduct")}
         />
 
         <Button
@@ -56,7 +54,21 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           text="Sync Products"
           style={$button}
           preset="default"
-          onPress={() => navigation.navigate("SyncProducts")}
+          onPress={() => handleRefresh()}
+        />
+
+        <Button
+          text="DatabaseInfo"
+          style={$button}
+          preset="default"
+          onPress={() => navigation.navigate("DatabaseInfo")}
+        />
+
+        <Button
+          text="OrderList"
+          style={$button}
+          preset="default"
+          onPress={() => navigation.navigate("OrderList")}
         />
       </Screen>
     );

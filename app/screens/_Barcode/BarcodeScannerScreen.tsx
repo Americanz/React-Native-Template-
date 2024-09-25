@@ -15,13 +15,13 @@ import { ViewScannedButton } from "../../components/_Scanned/ViewScannedButton";
 import { Appbar } from "react-native-paper";
 
 export const BarcodeScannerScreen: React.FC<DemoTabScreenProps<
-  "BarcodeScanner"
+  "BarcodeTab"
 >> = observer(({ navigation }) => {
   const [permission, requestPermission] = useCameraPermissions();
   const [scanning, setScanning] = useState(false);
 
   useEffect(() => {
-    barcodeStore.fetchBarcodes();
+    barcodeStore.fetchBarcode();
   }, []);
 
   const handleBarCodeScanned = useCallback(
@@ -78,14 +78,25 @@ export const BarcodeScannerScreen: React.FC<DemoTabScreenProps<
       <ViewScannedButton />
       <Button
         text="Clear All Barcodes"
-        onPress={() => barcodeStore.clearBarcodes()}
+        onPress={() => barcodeStore.clearBarcode()}
         style={$button}
       />
       <Button
         text=" New Scaner"
-        onPress={() => navigation.navigate("Scaner")}
+        onPress={() => navigation.navigate("ScanerVisionScreen")}
         style={$button}
-        // preset="reversed"
+      />
+
+      <Button
+        text=" ExpandableCalendar"
+        onPress={() => navigation.navigate("ExpandableCalendar")}
+        style={$button}
+      />
+
+      <Button
+        text="My CalendarScreen"
+        onPress={() => navigation.navigate("CalendarScreen")}
+        style={$button}
       />
     </>
   );

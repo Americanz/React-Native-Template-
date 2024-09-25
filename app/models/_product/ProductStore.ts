@@ -1,7 +1,29 @@
 import { Instance, SnapshotOut, types, flow } from "mobx-state-tree";
-import { ProductModel } from "../../types/productTypes";
-import { withSetPropAction } from "../helpers/withSetPropAction";
-import { dbOperations } from "../../db/dbOperations";
+import { ProductModel, Product } from "app/types/productTypes";
+import { productOperations } from "app/db/dbOperations";
+import { createLogger } from "app/utils/logger";
+
+const logger = createLogger("ProductStore");
+
+// Constants
+const DEFAULT_PAGE_SIZE = 10;
+
+// Custom types
+type Filters = {
+  categoryId?: number;
+  priceRange?: { min: number; max: number };
+  searchQuery?: string;
+  // Add other filter properties as needed
+};
+
+type DatabaseError = {
+  message: string;
+  code?: string;
+};
+
+// Helper functions
+const productNameIncludes = (product: Product, query: string) =>
+  product.name.toLowerCase().includes(query.toLowerCase());
 
 export const ProductStoreModel = types
   .model("ProductStore")
@@ -11,124 +33,137 @@ export const ProductStoreModel = types
     selectedCategoryId: types.maybeNull(types.number),
     currentPage: types.optional(types.number, 1),
     total: types.optional(types.number, 0),
-    pageSize: types.optional(types.number, 10),
+    pageSize: types.optional(types.number, DEFAULT_PAGE_SIZE),
     isLoading: types.optional(types.boolean, false),
     hasError: types.optional(types.boolean, false),
     errorMessage: types.optional(types.string, ""),
     selectedProduct: types.maybeNull(types.frozen()),
-    filters: types.optional(types.frozen(), {}),
+    filters: types.optional(types.frozen<Filters>(), {}),
   })
-  .actions(withSetPropAction)
   .views((store) => ({
+    /**
+     * Filters products based on the current search query and selected category
+     * @param searchQuery - The search query to filter products by
+     * @returns Filtered array of products
+     */
     getFilteredProducts(searchQuery: string) {
+      const lowercasedQuery = searchQuery.toLowerCase();
       return store.products.filter((product) => {
-        // Фільтрація за пошуковим запитом
-        if (
-          searchQuery &&
-          !product.name.toLowerCase().includes(searchQuery.toLowerCase())
-        ) {
-          return false;
-        }
+        const matchesSearchQuery =
+          !searchQuery || productNameIncludes(product, lowercasedQuery);
+        const matchesCategory =
+          store.selectedCategoryId === null ||
+          product.category?.id === store.selectedCategoryId;
 
-        // Фільтрація за категорією
-        if (
-          store.selectedCategoryId !== null &&
-          product.category?.id !== store.selectedCategoryId
-        ) {
-          return false;
-        }
-
-        return true;
+        return matchesSearchQuery && matchesCategory;
       });
     },
   }))
-  .actions((store) => ({
-    setLoading(loading: boolean) {
-      store.setProp("isLoading", loading);
-    },
-    setError(message: string) {
-      store.setProp("hasError", true);
-      store.setProp("errorMessage", message);
-    },
-    clearError() {
-      store.setProp("hasError", false);
-      store.setProp("errorMessage", "");
-    },
-    setFilters(filters: Record<string, any>) {
-      store.setProp("filters", { ...store.filters, ...filters });
-      store.setCurrentPage(1);
-      this.fetchProducts();
-    },
+  .actions((store) => {
+    const setError = (error: DatabaseError) => {
+      store.hasError = true;
+      store.errorMessage = `Помилка: ${error.message}${
+        error.code ? ` (Код: ${error.code})` : ""
+      }`;
+      logger.error("Встановлено стан помилки", { error });
+    };
 
-    // Використання flow для асинхронних дій
-    fetchProducts: flow(function* (append: boolean = false) {
-      store.setLoading(true);
-      store.clearError();
+    const clearError = () => {
+      store.hasError = false;
+      store.errorMessage = "";
+    };
+
+    const setFilters = (filters: Filters) => {
+      store.filters = { ...store.filters, ...filters };
+      store.currentPage = 1;
+      fetchProducts();
+    };
+
+    const setSelectedCategoryId = (id: number | null) => {
+      store.selectedCategoryId = id;
+      store.currentPage = 1;
+      fetchProducts();
+    };
+
+    const setCurrentPage = (page: number) => {
+      store.currentPage = page;
+      fetchProducts();
+    };
+
+    const fetchProducts = flow(function* (append = false) {
+      store.isLoading = true;
+      clearError();
       try {
         const offset = (store.currentPage - 1) * store.pageSize;
-        const result = yield dbOperations.getProducts(store.pageSize, offset, {
+        const result = yield productOperations.getProducts(store.pageSize, offset, {
           ...store.filters,
           categoryId: store.selectedCategoryId,
         });
-        if (append) {
-          store.setProp("products", [...store.products, ...result.products]);
-        } else {
-          store.setProp("products", result.products);
-        }
-        store.setProp("total", result.total);
-      } catch (error) {
-        console.error("Error fetching products from database:", error);
-        store.setError("Не вдалося завантажити продукти з бази даних");
-      } finally {
-        store.setLoading(false);
-      }
-    }),
 
-    fetchProductById: flow(function* (productId: number) {
-      store.setLoading(true);
-      store.clearError();
+        store.products = append
+          ? [...store.products, ...result.products]
+          : result.products;
+
+        store.total = result.total;
+      } catch (error) {
+        const dbError = error as DatabaseError;
+        logger.error("Помилка при завантаженні продуктів", {
+          error: dbError,
+          errorMessage: dbError.message
+        });
+        setError(dbError);
+      } finally {
+        store.isLoading = false;
+      }
+    });
+
+    const fetchProductById = flow(function* (productId: number) {
+      store.isLoading = true;
+      clearError();
       try {
-        const product = yield dbOperations.getProductById(productId);
-        if (product) {
-          store.setProp("selectedProduct", product);
-        } else {
-          store.setError(`Продукт з ID ${productId} не знайдено`);
+        const product = yield productOperations.getProductById(productId);
+        store.selectedProduct = product || null;
+        if (!product) {
+          logger.warn("Продукт не знайдено", { productId });
+          setError({ message: `Продукт з ID ${productId} не знайдено` });
         }
       } catch (error) {
-        console.error(`Error fetching product with ID ${productId}:`, error);
-        store.setError(
-          `Не вдалося завантажити продукт з ID ${productId}: ${error.message}`
-        );
+        const dbError = error as DatabaseError;
+        logger.error("Помилка при завантаженні продукту", {
+          productId,
+          error: dbError,
+        });
+        setError(dbError);
       } finally {
-        store.setLoading(false);
+        store.isLoading = false;
       }
-    }),
+    });
 
-    fetchCategories: flow(function* () {
-      store.setLoading(true);
-      store.clearError();
+    const fetchCategories = flow(function* () {
+      store.isLoading = true;
+      clearError();
       try {
-        const categoriesData = yield dbOperations.getCategories();
-        store.setProp("categories", categoriesData);
+        store.categories = yield productOperations.getCategories();
       } catch (error) {
-        console.error("Error fetching categories from database:", error);
-        store.setError("Не вдалося завантажити категорії з бази даних");
+        const dbError = error as DatabaseError;
+        logger.error("Помилка при завантаженні категорій", { error: dbError });
+        setError(dbError);
       } finally {
-        store.setLoading(false);
+        store.isLoading = false;
       }
-    }),
+    });
 
-    setSelectedCategoryId(id: number | null) {
-      store.setProp("selectedCategoryId", id);
-      store.setProp("currentPage", 1);
-      this.fetchProducts();
-    },
-
-    setCurrentPage(page: number) {
-      store.setProp("currentPage", page);
-      this.fetchProducts();
-    },
-  }));
+    return {
+      setError,
+      clearError,
+      setFilters,
+      setSelectedCategoryId,
+      setCurrentPage,
+      fetchProducts,
+      fetchProductById,
+      fetchCategories,
+    };
+  });
 
 export interface ProductStore extends Instance<typeof ProductStoreModel> {}
 export interface ProductStoreSnapshot

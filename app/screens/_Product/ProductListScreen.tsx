@@ -1,120 +1,190 @@
-import React, { FC, useState, useEffect } from "react";
-import { View, ViewStyle, FlatList, useWindowDimensions } from "react-native";
+import React, { FC, useState, useEffect, useCallback } from "react";
+import { ViewStyle, FlatList, useWindowDimensions } from "react-native";
 import { observer } from "mobx-react-lite";
-import { Screen, Header } from "../../components";
-import { useStores } from "../../models";
-import { AppStackScreenProps } from "../../navigators";
-import { spacing, colors } from "../../theme";
-import { Searchbar, ActivityIndicator, DataTable } from "react-native-paper";
+import { Screen, Header } from "app/components";
+import { useStores } from "app/models";
+import { AppStackScreenProps } from "app/navigators";
+import { colors } from "app/theme";
+import { DataTable, Snackbar, ActivityIndicator } from "react-native-paper";
 import { ProductItem } from "./ProductItem";
 import { ProductGridItem } from "./ProductGridItem";
 import { FilterBar } from "./FilterBar";
+import { SearchBar } from "app/components/_product/SearchBar";
+import { CartBadge } from "app/components/_product/CartBadge";
+import debounce from "lodash/debounce";
 
 interface ProductListScreenProps extends AppStackScreenProps<"ProductList"> {}
 
 export const ProductListScreen: FC<ProductListScreenProps> = observer(
   function ProductListScreen({ navigation }) {
-    const { productStore } = useStores();
+    const { productStore, cartStore } = useStores();
     const [searchQuery, setSearchQuery] = useState("");
     const [isGridView, setIsGridView] = useState(false);
     const { width } = useWindowDimensions();
 
     const numColumns = Math.floor(width / 180);
-
-
-    const filteredProducts = productStore.getFilteredProducts(searchQuery);
     const totalPages = Math.ceil(productStore.total / productStore.pageSize);
 
+    const fetchData = useCallback(async () => {
+      try {
+        await Promise.all([
+          productStore.fetchProducts(),
+          productStore.fetchCategories(),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        productStore.setError("Failed to fetch data. Please try again.");
+      }
+    }, [productStore]);
+
     useEffect(() => {
-      loadInitialData();
+      fetchData();
+    }, [fetchData]);
+
+    const debouncedSearch = useCallback(
+      debounce((query: string) => {
+        productStore.setFilters({ searchQuery: query });
+      }, 300),
+      [productStore]
+    );
+
+    useEffect(() => {
+      debouncedSearch(searchQuery);
+    }, [searchQuery, debouncedSearch]);
+
+    const handleRefresh = useCallback(() => {
+      productStore.fetchProducts();
+    }, [productStore]);
+
+    const handlePageChange = useCallback(
+      (page: number) => {
+        productStore.setCurrentPage(page + 1);
+      },
+      [productStore]
+    );
+
+    const toggleViewMode = useCallback(() => {
+      setIsGridView((prev) => !prev);
     }, []);
 
-    async function loadInitialData() {
-      await Promise.all([
-        productStore.fetchProducts(),
-        productStore.fetchCategories(),
-      ]);
-    }
+    const handleAddToCart = useCallback(
+      (productId: number) => {
+        cartStore.addItem(productId);
+      },
+      [cartStore]
+    );
 
-    async function handleRefresh() {
-      await productStore.fetchProducts();
-    }
+    const handleRemoveFromCart = useCallback(
+      (productId: number) => {
+        cartStore.removeItem(productId);
+      },
+      [cartStore]
+    );
 
-    function handlePageChange(page: number) {
-      productStore.setCurrentPage(page + 1);
-    }
+    const getProductQuantity = useCallback(
+      (productId: number) => cartStore.getItemQuantity(productId),
+      [cartStore]
+    );
 
-    const toggleViewMode = () => setIsGridView(!isGridView);
+    const handleUpdateQuantity = useCallback(
+      (productId: number, newQuantity: number) => {
+        cartStore.updateItemQuantity(productId, newQuantity);
+      },
+      [cartStore]
+    );
 
-    const renderItem = ({ item }) =>
-      isGridView ? (
-        <ProductGridItem
-          product={item}
-          onPress={() =>
-            navigation.navigate("ProductDetail", { productId: item.id })
-          }
-          numColumns={numColumns}
-        />
-      ) : (
-        <ProductItem
-          product={item}
-          onPress={() =>
-            navigation.navigate("ProductDetail", { productId: item.id })
-          }
-        />
-      );
+    const renderItem = useCallback(
+      ({ item }) => {
+        const commonProps = {
+          product: item,
+          onPress: () =>
+            navigation.navigate("ProductDetail", { productId: item.id }),
+          onAddToCart: () => handleAddToCart(item.id),
+          onRemoveFromCart: () => handleRemoveFromCart(item.id),
+          onQuantityChange: (newQuantity: number) =>
+            handleUpdateQuantity(item.id, newQuantity),
+          quantity: getProductQuantity(item.id),
+        };
+
+        return isGridView ? (
+          <ProductGridItem {...commonProps} numColumns={numColumns} />
+        ) : (
+          <ProductItem {...commonProps} />
+        );
+      },
+      [
+        isGridView,
+        navigation,
+        handleAddToCart,
+        handleRemoveFromCart,
+        handleUpdateQuantity,
+        getProductQuantity,
+        numColumns,
+      ]
+    );
 
     return (
       <Screen preset="fixed" contentContainerStyle={$screenContentContainer}>
         <Header
-          title="Products"
+          title="Product"
           leftIcon="back"
           onLeftPress={() => navigation.goBack()}
+          RightActionComponent={
+            <CartBadge
+              itemCount={cartStore.totalItems}
+              onPress={() => navigation.navigate("Cart")}
+            />
+          }
         />
-
-        <Searchbar
-          placeholder="Пошук"
-          elevation={1}
-          onChangeText={setSearchQuery}
+        <SearchBar
           value={searchQuery}
-          style={$searchBar}
+          onChangeText={setSearchQuery}
+          onClear={() => setSearchQuery("")}
         />
-
         <FilterBar
           onFilterPress={() => navigation.navigate("FilterScreen")}
-          onSortPress={() => {
-            /* Додайте логіку сортування */
-          }}
           onViewToggle={toggleViewMode}
           isGridView={isGridView}
         />
 
-        <FlatList
-          data={filteredProducts}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id.toString()}
-          numColumns={isGridView ? numColumns : 1}
-          key={isGridView ? `grid-${numColumns}` : "list"}
-          refreshing={productStore.isLoading}
-          onRefresh={handleRefresh}
-          contentContainerStyle={$listContent}
-          ListFooterComponent={() =>
-            productStore.isLoading ? (
-              <ActivityIndicator style={$loader} />
-            ) : null
-          }
+        {productStore.isLoading ? (
+          <ActivityIndicator size="large" color={colors.palette.primary500} />
+        ) : (
+          <FlatList
+            data={productStore.getFilteredProducts(searchQuery)}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id.toString()}
+            numColumns={isGridView ? numColumns : 1}
+            key={isGridView ? `grid-${numColumns}` : "list"}
+            refreshing={productStore.isLoading}
+            onRefresh={handleRefresh}
+            contentContainerStyle={$listContent}
+          />
+        )}
+
+        <DataTable.Pagination
+          page={productStore.currentPage - 1}
+          numberOfPages={totalPages}
+          onPageChange={handlePageChange}
+          label={`${productStore.currentPage} of ${totalPages}`}
+          showFastPaginationControls
+          numberOfItemsPerPageOptions={[productStore.pageSize]}
+          style={$paginationContainer}
         />
 
-        <View style={$paginationContainer}>
-          <DataTable.Pagination
-            page={productStore.currentPage - 1}
-            numberOfPages={totalPages}
-            onPageChange={handlePageChange}
-            label={`${productStore.currentPage} of ${totalPages}`}
-            showFastPaginationControls
-            numberOfItemsPerPageOptions={[productStore.pageSize]}
-          />
-        </View>
+        <Snackbar
+          visible={productStore.hasError}
+          onDismiss={() => productStore.clearError()}
+          action={{
+            label: "Retry",
+            onPress: () => {
+              productStore.clearError();
+              fetchData();
+            },
+          }}
+        >
+          {productStore.errorMessage}
+        </Snackbar>
       </Screen>
     );
   }
@@ -124,26 +194,12 @@ const $screenContentContainer: ViewStyle = {
   flex: 1,
 };
 
-const $searchBar: ViewStyle = {
-  margin: spacing.sm,
-};
-
 const $listContent: ViewStyle = {
   flexGrow: 1,
 };
 
-const $loader: ViewStyle = {
-  marginVertical: spacing.md,
-};
-
 const $paginationContainer: ViewStyle = {
-  flexDirection: "row",
   justifyContent: "center",
-  alignItems: "center",
-  paddingVertical: spacing.sm,
-  borderTopWidth: 1,
-  borderTopColor: colors.outline,
-  backgroundColor: colors.background,
 };
 
 export default ProductListScreen;

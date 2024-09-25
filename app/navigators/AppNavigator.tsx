@@ -52,7 +52,12 @@ export type AppStackParamList = {
   FilterScreen: undefined;
   CategoriesScreen: undefined;
   CalendarScreen: undefined;
-  Scaner: undefined;
+  ScanerVisionScreen: undefined;
+  ExpandableCalendar: undefined;
+  OrderList: undefined;
+  OrderDetail: { orderId: number };
+  Cart: undefined;
+  DatabaseInfo: undefined;
 };
 
 /**
@@ -112,12 +117,37 @@ const AppStack = observer(function AppStack() {
             name="CategoriesScreen"
             component={Screens.CategoriesScreen}
           />
+
           <Stack.Screen
             name="CalendarScreen"
             component={Screens.CalendarScreen}
           />
+
           <Stack.Screen name="FilterScreen" component={Screens.FilterScreen} />
-          <Stack.Screen name="Scaner" component={Screens.ScanerScreen} />
+
+          <Stack.Screen
+            name="ScanerVisionScreen"
+            component={Screens.ScanerScreen}
+          />
+
+          <Stack.Screen
+            name="ExpandableCalendar"
+            component={Screens.ExpandableCalendarScreen}
+          />
+
+          <Stack.Screen name="OrderList" component={Screens.OrderListScreen} />
+
+          <Stack.Screen name="Cart" component={Screens.CartScreen} />
+
+          <Stack.Screen
+            name="OrderDetail"
+            component={Screens.OrderDetailScreen}
+          />
+
+          <Stack.Screen
+            name="DatabaseInfo"
+            component={Screens.DatabaseInfoScreen}
+          />
         </>
       ) : (
         <>

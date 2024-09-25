@@ -1,8 +1,8 @@
 // api/product-manage.ts
 
 import { request } from "../../request";
-import * as apiTypes from "../../../types/apiTypes";
-import * as productTypes from "../../../types/productTypes";
+import * as apiTypes from "app/types/api";
+import * as productTypes from "app/types/product";
 
 /** get product list */
 export function fetchGetProductList(params?: apiTypes.SearchParams) {
@@ -14,7 +14,7 @@ export function fetchGetProductList(params?: apiTypes.SearchParams) {
 }
 
 export function fetchProductById(productId: number) {
-  return request<productTypes.ProductItem>({
+  return request<productTypes.Product>({
     url: `/api/v1/product-manage/products/${productId}`,
     method: "get",
   });

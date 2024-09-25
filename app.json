@@ -65,11 +65,16 @@
             "newArchEnabled": false
           }
         }
-      ], 
+      ],
       "expo-font"
     ],
     "experiments": {
       "tsconfigPaths": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "03f30c8f-cc40-482a-b32f-27891b27d485"
+      }
     }
   },
   "ignite": {

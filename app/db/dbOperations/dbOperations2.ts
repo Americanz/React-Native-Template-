@@ -1,5 +1,5 @@
-import { getDatabase } from "../db/dataManager";
-import * as schema from "./schema";
+import { getDatabase } from "../dbManager";
+import * as schema from "../schema";
 import { sql, eq, desc, like, and } from "drizzle-orm";
 import { SQLiteSelectBase } from "drizzle-orm/sqlite-core/query-builders/select";
 
@@ -55,7 +55,7 @@ export const dbOperations = {
       .select({ count: sql`count(*)` })
       .from(schema.product);
 
-    const formattedProducts = products.map((item) => {
+    const formattedProducts = products.map((item: any) => {
       const product = item.Product;
       let parsedAttribute = null;
       if (product.attribute) {
@@ -155,7 +155,7 @@ export const dbOperations = {
 
   async getSyncStats(
     entityType: "product" | "category",
-    limit: number = 10
+    limit: 10
   ): Promise<any[]> {
     const db = getDatabase();
     return db
@@ -203,7 +203,6 @@ export const dbOperations = {
     };
 
     try {
-      // const exists = await productExists(productData.id);
 
       const mappedProduct = mapApiDataToDbSchema(productData, schema.product);
 
@@ -222,7 +221,6 @@ export const dbOperations = {
           set: mappedProduct,
         });
 
-      // await db.insert(schema.product).values(mappedProduct);
       console.log(`Product ${mappedProduct.id} upsert successfully`);
     } catch (error) {
       console.error(`Error upserting product ${productData.id}:`, error);

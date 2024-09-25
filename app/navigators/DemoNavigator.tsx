@@ -21,16 +21,16 @@ import { colors, spacing, typography } from "../theme";
 import { AppStackParamList, AppStackScreenProps } from "./AppNavigator";
 import { SettingsScreen } from "../screens/_Settings/SettingsScreen";
 import { uiStore } from "../utils/storage/_user/UserStore";
-import { MD3Colors } from "react-native-paper";
+
 
 export type DemoTabParamList = {
   DemoCommunity: undefined;
   DemoShowroom: { queryIndex?: string; itemIndex?: string };
   DemoDebug: undefined;
   DemoPodcastList: undefined;
-  BarcodeScanner: undefined;
-  Settings: undefined;
-  ProductScreen: undefined;
+  BarcodeTab: undefined;
+  SettingsTab: undefined;
+  ProductTab: undefined;
 };
 
 /**
@@ -141,7 +141,7 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="BarcodeScanner"
+        name="BarcodeTab"
         component={BarcodeScannerScreen}
         options={{
           tabBarLabel: "Barcode",
@@ -159,7 +159,7 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="ProductScreen"
+        name="ProductTab"
         component={ProductScreen}
         options={{
           tabBarLabel: "Product",
@@ -177,7 +177,7 @@ export function DemoNavigator() {
       />
 
       <Tab.Screen
-        name="Settings"
+        name="SettingsTab"
         component={SettingsScreen}
         options={{
           tabBarLabel: "Settings",

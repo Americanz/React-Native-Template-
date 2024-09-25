@@ -43,6 +43,10 @@ export const iconRegistry = {
   qrcode: { paperIconName: "qrcode-scan" },
   magnify: { paperIconName: "magnify" },
   view_list: { paperIconName: "format-list-bulleted" },
+  filter: { paperIconName: "filter" },
+  calendar: { paperIconName: "calendar" },
+  cart: { paperIconName: "cart" },
+  search: { paperIconName: "magnify" },
 };
 
 export type IconTypes = keyof typeof iconRegistry;

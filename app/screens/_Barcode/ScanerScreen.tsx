@@ -1,79 +1,72 @@
-import React, { FC, useEffect, useState } from "react";
+import React, { FC, useRef, useEffect } from "react";
 import { observer } from "mobx-react-lite";
 import { ViewStyle } from "react-native";
 import { AppStackScreenProps } from "app/navigators";
 import { Screen, Text, Button } from "app/components";
-import { Camera, useCameraDevices } from "react-native-vision-camera";
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+} from "react-native-vision-camera";
 
-interface ScanerScreenProps extends AppStackScreenProps<"Scaner"> {}
+interface ScanerScreenProps extends AppStackScreenProps<"ScanerVisionScreen"> {}
+
+const PermissionsPage: FC = () => (
+  <Screen style={$container}>
+    <Text text="Camera permission is required to use this feature." />
+    <Button
+      text="Grant Permission"
+      onPress={() => {
+        Camera.requestCameraPermission();
+      }}
+    />
+  </Screen>
+);
+
+const NoCameraDeviceError: FC = () => (
+  <Screen style={$container}>
+    <Text text="No camera device available" />
+  </Screen>
+);
 
 export const ScanerScreen: FC<ScanerScreenProps> = observer(
   function ScanerScreen() {
-    const [hasPermission, setHasPermission] = useState(false);
-    const [isCameraAvailable, setIsCameraAvailable] = useState(false);
-    const devices = useCameraDevices();
-    const device = devices?.back;
+    const { hasPermission } = useCameraPermission();
+    const device = useCameraDevice("back");
+    const camera = useRef<Camera>(null);
 
     useEffect(() => {
-      (async () => {
-        const cameraPermission = await Camera.requestCameraPermission();
-        setHasPermission(cameraPermission === "authorized");
+      // Функція для логування інформації про камери
+      const logCameraDevices = async () => {
+        const devices = await Camera.getAvailableCameraDevices();
+        console.log("Available camera devices:");
+        console.log(JSON.stringify(devices, null, 2));
+      };
 
-        const isAvailable = await Camera.isAvailable();
-        setIsCameraAvailable(isAvailable);
-      })();
+      // Викликаємо функцію логування
+      logCameraDevices();
     }, []);
 
-    // Додаткова перевірка на випадок, якщо `devices` undefined
-    useEffect(() => {
-      if (devices) {
-        setIsCameraAvailable(!!device);
+    const capturePhoto = async () => {
+      if (camera.current) {
+        const photo = await camera.current.takePhoto({});
+        console.log(photo.path);
+        // Handle the captured photo here
       }
-    }, [devices]);
+    };
 
-    if (!isCameraAvailable) {
-      return (
-        <Screen style={$container}>
-          <Text text="Camera is not available on this device." />
-        </Screen>
-      );
-    }
-
-    if (!hasPermission) {
-      return (
-        <Screen style={$container}>
-          <Text text="Camera permission is required to use this feature." />
-          <Button
-            text="Grant Permission"
-            style={$captureButton}
-            onPress={async () => {
-              const cameraPermission = await Camera.requestCameraPermission();
-              setHasPermission(cameraPermission === "authorized");
-            }}
-          />
-        </Screen>
-      );
-    }
-
-    if (!device) {
-      return (
-        <Screen style={$container}>
-          <Text text="Loading camera..." />
-        </Screen>
-      );
-    }
+    if (!hasPermission) return <PermissionsPage />;
+    if (device == null) return <NoCameraDeviceError />;
 
     return (
       <Screen style={$container}>
-        <Camera style={$camera} device={device} isActive={true} />
-        <Button
-          text="Capture"
-          style={$captureButton}
-          onPress={() => {
-            // Implement capture functionality here
-            console.log("Capture button pressed");
-          }}
+        <Camera
+          ref={camera}
+          device={device}
+          isActive={true}
+          style={{ width: 500, height: 500 }}
         />
+        <Button text="Capture" style={$captureButton} onPress={capturePhoto} />
       </Screen>
     );
   }
@@ -81,14 +74,8 @@ export const ScanerScreen: FC<ScanerScreenProps> = observer(
 
 const $container: ViewStyle = {
   flex: 1,
-  justifyContent: "center",
   alignItems: "center",
-};
-
-const $camera: ViewStyle = {
-  flex: 1,
-  width: "100%",
-  height: "100%",
+  justifyContent: "center",
 };
 
 const $captureButton: ViewStyle = {

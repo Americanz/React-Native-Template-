@@ -1,7 +1,7 @@
 import React from "react";
 import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
 import { Text } from "../Text";
-import { colors, spacing } from "../../theme";
+import { colors, spacing } from "app/theme";
 
 interface QuantityControlProps {
   quantity: number;

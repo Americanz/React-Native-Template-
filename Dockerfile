@@ -13,4 +13,4 @@ RUN pnpm run build
 
 EXPOSE 19000
 
-CMD ["pnpm", "start"]
+CMD [ "pnpm", "migration", "pnpm", "start"]

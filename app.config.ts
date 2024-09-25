@@ -6,6 +6,7 @@ import { ExpoConfig, ConfigContext } from "@expo/config";
  */
 require("ts-node/register");
 
+
 /**
  * @param config ExpoConfig coming from the static config app.json if it exists
  *
@@ -13,24 +14,25 @@ require("ts-node/register");
  * https://docs.expo.dev/workflow/configuration/#configuration-resolution-rules
  */
 module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
-  const existingPlugins = config.plugins ?? [];
+  const existingPlugins = config.plugins ?? [
+    [
+      "react-native-vision-camera",
+      {
+        cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
+
+        // optionally, if you want to record audio:
+        enableMicrophonePermission: true,
+        microphonePermissionText:
+          "$(PRODUCT_NAME) needs access to your Microphone.",
+      },
+    ],
+  ];
 
   return {
     ...config,
     plugins: [
       ...existingPlugins,
       require("./plugins/withSplashScreen").withSplashScreen,
-      [
-        "react-native-vision-camera",
-        {
-          cameraPermissionText: "$(PRODUCT_NAME) needs access to your Camera.",
-
-          // optionally, if you want to record audio:
-          enableMicrophonePermission: true,
-          microphonePermissionText:
-            "$(PRODUCT_NAME) needs access to your Microphone.",
-        },
-      ],
     ],
   };
 };

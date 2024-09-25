@@ -1,9 +1,9 @@
 import React from "react";
 import { View, ViewStyle, TouchableOpacity, TextStyle } from "react-native";
-import { Text } from "../../components";
-import { colors, spacing } from "../../theme";
+import { Text } from "app/components";
+import { colors, spacing } from "app/theme";
 import { observer } from "mobx-react-lite";
-import { useStores } from "../../models";
+import { useStores } from "app/models";
 import { Icon } from "react-native-paper";
 
 interface FilterBarProps {
@@ -72,7 +72,7 @@ const $container: ViewStyle = {
   justifyContent: "space-between",
   alignItems: "center",
   paddingHorizontal: spacing.sm,
-  paddingVertical: spacing.xs,
+  paddingVertical: spacing.xxxs,
   borderBottomWidth: 1,
   borderBottomColor: colors.separator,
 };
@@ -84,8 +84,8 @@ const $leftButtons: ViewStyle = {
 const $button: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
-  paddingVertical: spacing.xs,
-  paddingHorizontal: spacing.sm,
+  paddingVertical: spacing.xxxs,
+  paddingHorizontal: spacing.xxxs,
   borderRadius: 4,
   marginRight: spacing.sm,
 };
@@ -97,7 +97,7 @@ const $activeButton: ViewStyle = {
 const $buttonText: TextStyle = {
   fontSize: 14,
   color: colors.text,
-  marginLeft: spacing.xs,
+  marginLeft: spacing.xxxs,
 };
 
 const $activeButtonText: TextStyle = {

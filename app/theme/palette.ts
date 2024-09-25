@@ -31,6 +31,17 @@ export const palette = {
   angry100: "#F2D6CD",
   angry500: "#C03403",
 
+  success50: "#64ff66",
+  success100: "#42ff45",
+  success200: "#21fe25",
+  success300: "#08f60c",
+  success400: "#07d50a",
+  success500: "#0bbc0e",
+  success600: "#0fa511",
+  success700: "#118e13",
+  success800: "#127914",
+  success900: "#136414",
+
   overlay20: "rgba(25, 16, 21, 0.2)",
   overlay50: "rgba(25, 16, 21, 0.5)",
 } as const;

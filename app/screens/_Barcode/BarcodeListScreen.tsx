@@ -21,10 +21,10 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
       }
     };
 
-    const confirmClearBarcodes = () => {
+    const confirmClearBarcode = () => {
       Alert.alert(
-        "Clear All Barcodes",
-        "Are you sure you want to delete all barcodes? This action cannot be undone.",
+        "Clear All Barcode",
+        "Are you sure you want to delete all barcode? This action cannot be undone.",
         [
           {
             text: "Cancel",
@@ -32,7 +32,7 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
           },
           {
             text: "OK",
-            onPress: () => barcodeStore.clearBarcodes(),
+            onPress: () => barcodeStore.clearBarcode(),
           },
         ]
       );
@@ -50,7 +50,7 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
           onLeftPress={() => navigation.goBack()}
         />
 
-        {barcodeStore.barcodes.map((barcode, index) => (
+        {barcodeStore.barcode.map((barcode, index) => (
           <Card
             key={index}
             style={$card}
@@ -81,24 +81,15 @@ export const BarcodeListScreen: FC<BarcodeListProps> = observer(
           />
         ))}
 
-        {barcodeStore.barcodes.length === 0 && (
-          <Text text="No barcodes scanned yet" style={$emptyText} />
+        {barcodeStore.barcode.length === 0 && (
+          <Text text="No barcode scanned yet" style={$emptyText} />
         )}
 
         <Button
-          text="Scan New Barcode"
-          onPress={() => navigation.navigate("BarcodeScanner")}
-          style={$button}
-          preset="reversed"
-        />
-
-        <Button
-          text="Clear All Barcodes"
-          onPress={confirmClearBarcodes}
+          text="Clear All Barcode"
+          onPress={confirmClearBarcode}
           style={$button}
         />
-
-       
       </Screen>
     );
   }

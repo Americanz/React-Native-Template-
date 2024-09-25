@@ -1,4 +1,4 @@
-import { ProductItem } from "../../types/productTypes";
+import { ProductItem } from "app/types/productTypes";
 import { isAlive } from "mobx-state-tree";
 
 export const prepareProductForDB = (product: ProductItem) => ({
@@ -9,7 +9,7 @@ export const prepareProductForDB = (product: ProductItem) => ({
 
 export const parseProductFromDB = (product: any): ProductItem => ({
   ...product,
-  attribute: JSON.parse(product.attribute),
+  attribute: JSON.parse(product.attribute), 
   isArchived: Boolean(product.isArchived),
 });
 

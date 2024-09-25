@@ -1,7 +1,7 @@
-import { createLogger } from "../../utils/logger";
+import { createLogger } from "app/utils/logger";
 import { EntityType, SyncResult, SyncConfig } from "./types";
 import { syncProducts, syncCategories } from "./productSync";
-import { dbOperations } from "../dbOperations";
+import * as dbOperations from "../dbOperations";
 
 const logger = createLogger("SyncService", { minLevel: "info" });
 

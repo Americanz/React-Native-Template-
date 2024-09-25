@@ -4,6 +4,7 @@ import { EpisodeStoreModel } from "./EpisodeStore";
 
 import { ProductStoreModel } from "./_product/ProductStore";
 import { ThemeStoreModel } from "./_theme";
+import { CartModel } from "./_cart/Cart";
 
 /**
  * A RootStore model.
@@ -13,6 +14,7 @@ export const RootStoreModel = types.model("RootStore").props({
   episodeStore: types.optional(EpisodeStoreModel, {}),
   productStore: types.optional(ProductStoreModel, {}),
   themeStore: types.optional(ThemeStoreModel, {}),
+  cartStore: types.optional(CartModel, {}),
 });
 
 /**

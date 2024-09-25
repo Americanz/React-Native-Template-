@@ -13,26 +13,27 @@ interface CategoriesScreenProps
 
 export const CategoriesScreen: React.FC<CategoriesScreenProps> = observer(
   function CategoriesScreen({ navigation }) {
-    const { categoryStore } = useStores();
+    // const { categoryStore } = useStores();
 
     // const fruitAndVegCategories = categoryStore.getFruitAndVegCategories();
     const fruitAndVegCategories = [
       {
+        id: 1,
         title: "Сезонні овочі, фрукти",
         imageUrl: "https://example.com/seasonal.jpg",
       },
-      { title: "Фрукти", imageUrl: "https://example.com/fruits.jpg" },
-      { title: "Ягоди", imageUrl: "https://example.com/berries.jpg" },
-      { title: "Овочі", imageUrl: "https://example.com/vegetables.jpg" },
+      { id: 2, title: "Фрукти", imageUrl: "https://example.com/fruits.jpg" },
+      { id: 3, title: "Ягоди", imageUrl: "https://example.com/berries.jpg" },
+      { id: 4, title: "Овочі", imageUrl: "https://example.com/vegetables.jpg" },
     ];
 
     const handleCategoryPress = (category) => {
-      categoryStore.setSelectedCategory(category);
-      navigation.navigate("ProductList", { categoryId: category.id });
+      // categoryStore.setSelectedCategory(category);
+      // navigation.navigate("ProductList", { categoryId: category.id });
     };
 
     const handleSeeAllPress = () => {
-      navigation.navigate("AllCategories");
+      // navigation.navigate("AllCategories");
     };
 
     return (
@@ -49,7 +50,6 @@ export const CategoriesScreen: React.FC<CategoriesScreenProps> = observer(
             onCategoryPress={handleCategoryPress}
             onSeeAllPress={handleSeeAllPress}
           />
-          {/* Додайте інші CategoryGrid компоненти для інших груп категорій */}
         </ScrollView>
         <Button
           mode="contained"

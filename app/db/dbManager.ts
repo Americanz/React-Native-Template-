@@ -1,12 +1,13 @@
 import { drizzle } from "drizzle-orm/expo-sqlite";
 import { migrate } from "drizzle-orm/expo-sqlite/migrator";
 import { sql } from "drizzle-orm";
-import * as schema from "./createDrizzleSchema";
+import * as schema from "./schema";
 import migrations from "./drizzle/migrations";
 import { APPLY_MIGRATIONS, DATABASE_NAME, RESET_DATABASE } from "@env";
 import * as FileSystem from "expo-file-system";
 import { openDatabaseAsync } from "expo-sqlite/next";
 
+let sqliteDb: ReturnType<typeof openDatabaseAsync> | null = null;
 let db: ReturnType<typeof drizzle> | null = null;
 
 export const initDatabase = async () => {
@@ -23,8 +24,8 @@ export const initDatabase = async () => {
     await resetDatabase(dbPath);
   }
 
-  const expo = await openDatabaseAsync(DATABASE_NAME);
-  db = drizzle(expo, { schema });
+  sqliteDb = await openDatabaseAsync(DATABASE_NAME);
+  db = drizzle(sqliteDb, { schema });
 
   console.log(`Database ${DATABASE_NAME} connected successfully`);
 
@@ -67,21 +68,13 @@ const checkAndApplyMigrations = async () => {
       return;
     }
 
-    if (!schema.drizzleMigrations) {
-      throw new Error("drizzleMigrations schema is not defined");
-    }
-
     const appliedMigrations = await db
       .select()
       .from(schema.drizzleMigrations)
       .execute();
 
-    if (!migrations || !Array.isArray(migrations.migrations)) {
-      throw new Error("Invalid migrations object structure");
-    }
-
     const pendingMigrations = migrations.migrations.filter(
-      (migration) =>
+      (migration: any) =>
         !appliedMigrations.some((applied) => applied.id === migration.id)
     );
 
@@ -119,8 +112,12 @@ export const getDatabase = () => {
 };
 
 export const closeDatabase = async () => {
+  if (sqliteDb) {
+    await sqliteDb.closeAsync();
+    sqliteDb = null;
+  }
   if (db) {
     db = null;
-    console.log("Database closed successfully");
   }
+  console.log("Database closed successfully");
 };

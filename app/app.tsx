@@ -69,7 +69,6 @@ interface AppProps {
  */
 function App(props: AppProps) {
   const { hideSplashScreen } = props;
-
   const { isLoading: isDatabaseLoading, error: databaseError } = useDatabase();
 
   const {

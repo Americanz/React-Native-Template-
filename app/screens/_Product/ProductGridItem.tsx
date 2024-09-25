@@ -4,17 +4,20 @@ import {
   useWindowDimensions,
   TextStyle,
   ImageStyle,
-  Image,
   View,
 } from "react-native";
-import { Text } from "../../components";
-import { Product } from "../../types/product";
-import { colors, spacing } from "../../theme";
-import { Card, TouchableRipple } from "react-native-paper";
+import { Text, Card } from "react-native-paper";
+import { Product } from "app/types/product";
+import { colors, spacing } from "app/theme";
+import { AddToCartButton } from "app/components/_product/AddToCartButton";
 
 interface ProductGridItemProps {
   product: Product;
   onPress: () => void;
+  onAddToCart: () => void;
+  onRemoveFromCart: () => void;
+  onQuantityChange: () => void;
+  quantity: number;
   numColumns: number;
 }
 
@@ -23,26 +26,35 @@ const productPlaceholder = require("../../../assets/images/product-placeholder.w
 export const ProductGridItem: React.FC<ProductGridItemProps> = ({
   product,
   onPress,
+  onAddToCart,
+  onRemoveFromCart,
+  onQuantityChange,
+  quantity,
   numColumns,
 }) => {
   const { width } = useWindowDimensions();
   const itemWidth = (width - spacing.sm * (numColumns + 1)) / numColumns;
 
   return (
-    <Card style={[$container, { width: itemWidth }]}>
-      <TouchableRipple onPress={onPress}>
-        <View style={$contentWrapper}>
-          <Card.Content style={$content}>
-            <Image
-              style={$image}
-              source={productPlaceholder}
-              resizeMode="contain"
-            />
-            <Text style={$name} numberOfLines={2} text={product.name} />
-            {/* <Text style={$price} text={`${product.price} грн`} /> */}
-          </Card.Content>
-        </View>
-      </TouchableRipple>
+    <Card style={[$container, { width: itemWidth }]} onPress={onPress}>
+      <Card.Cover
+        source={productPlaceholder}
+        style={$image}
+        resizeMode="contain"
+      />
+      <Card.Content style={$content}>
+        <Text style={$name} numberOfLines={2}>
+          {product.name}
+        </Text>
+      </Card.Content>
+      <Card.Actions style={$actions}>
+        <AddToCartButton
+          onPress={onAddToCart}
+          onDecrement={onRemoveFromCart}
+          onQuantityChange={onQuantityChange}
+          quantity={quantity}
+        />
+      </Card.Actions>
     </Card>
   );
 };
@@ -50,19 +62,10 @@ export const ProductGridItem: React.FC<ProductGridItemProps> = ({
 const $container: ViewStyle = {
   margin: spacing.xs,
   elevation: 2,
-  borderRadius: 8,
-};
-
-const $contentWrapper: ViewStyle = {
-  overflow: "hidden",
-  borderRadius: 8,
 };
 
 const $image: ImageStyle = {
-  alignSelf: "center",
   height: 88,
-  width: "100%",
-//   marginBottom: spacing.xxl,
 };
 
 const $content: ViewStyle = {
@@ -75,9 +78,8 @@ const $name: TextStyle = {
   marginBottom: spacing.xxs,
 };
 
-const $price: TextStyle = {
-  fontSize: 14,
-  color: colors.palette.primary500,
+const $actions: ViewStyle = {
+  justifyContent: "center",
 };
 
 export default ProductGridItem;

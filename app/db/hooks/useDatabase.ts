@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { initDatabase, getDatabase } from "../dataManager";
+import { initDatabase, getDatabase } from "../dbManager";
 
 export function useDatabase() {
   const [db, setDb] = useState(null);

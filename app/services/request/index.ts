@@ -1,10 +1,10 @@
 // request/index.ts
 
 import { create, ApiResponse, ApisauceInstance } from "apisauce";
-import Config from "../../config";
+import Config from "app/config";
 import { Platform } from "react-native";
-import { createLogger } from "../../utils/logger";
-import { ApiResult } from "../../types/apiTypes";
+import { createLogger } from "app/utils/logger";
+import { ApiResult } from "app/types/api";
 
 const logger = createLogger("API");
 

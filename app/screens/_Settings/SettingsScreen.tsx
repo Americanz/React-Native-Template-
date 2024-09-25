@@ -34,7 +34,7 @@ const SettingItem = ({
 };
 
 export const SettingsScreen: React.FC<DemoTabScreenProps<
-  "Settings"
+  "SettingsTab"
 >> = observer(function SettingsScreen({ navigation }) {
   const {
     authenticationStore: { logout },
