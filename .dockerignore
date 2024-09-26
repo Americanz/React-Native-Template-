@@ -1,0 +1,39 @@
+# Ігнорування файлів node_modules (вони будуть встановлені в контейнері)
+node_modules
+npm-debug.log
+pnpm-debug.log
+
+# Ігнорування всіх файлів конфігурації системи
+.DS_Store
+Thumbs.db
+
+# Ігнорування локальних середовищевих файлів
+env
+.env.local
+.env.*.local
+
+# Ігнорування файлів логів
+*.log
+
+# Ігнорування вихідних папок збірки
+build
+dist
+
+# Ігнорування кешів
+.cache
+.pnpm-store
+
+# Ігнорування Git та інших версійних систем
+.git
+.gitignore
+
+# Інші специфічні файли або директорії, які не потрібні в контейнері
+*.swp
+.idea
+.vscode
+
+*.db
+app/db/drizzle/
+docker-compose.yml
+pnpm-lock.yaml
+Dockerfile

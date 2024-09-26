@@ -6,7 +6,6 @@ import { ExpoConfig, ConfigContext } from "@expo/config";
  */
 require("ts-node/register");
 
-
 /**
  * @param config ExpoConfig coming from the static config app.json if it exists
  *
@@ -34,5 +33,11 @@ module.exports = ({ config }: ConfigContext): Partial<ExpoConfig> => {
       ...existingPlugins,
       require("./plugins/withSplashScreen").withSplashScreen,
     ],
+    updates: {
+      url: "https://u.expo.dev/03f30c8f-cc40-482a-b32f-27891b27d485",
+    },
+    runtimeVersion: {
+      policy: "appVersion",
+    },
   };
 };

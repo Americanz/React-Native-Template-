@@ -1,10 +1,11 @@
 {
-  "name": "pizza-app",
-  "displayName": "pizza-app",
+  "name": "reactapp",
+  "displayName": "reactapp",
   "expo": {
-    "name": "pizza-app",
-    "slug": "pizza-app",
-    "scheme": "pizza-app",
+    "name": "reactapp",
+    "slug": "reactapp",
+    "owner": "americanz",
+    "scheme": "reactapp",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/app-icon-all.png",
@@ -22,7 +23,7 @@
     ],
     "android": {
       "icon": "./assets/images/app-icon-android-legacy.png",
-      "package": "com.pizzaapp",
+      "package": "com.reactapp",
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/app-icon-android-adaptive-foreground.png",
         "backgroundImage": "./assets/images/app-icon-android-adaptive-background.png"

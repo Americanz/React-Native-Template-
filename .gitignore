@@ -90,3 +90,4 @@ web-build/
 pnpm-lock.yaml
 *.db
 app/db/drizzle/
+dist/*
