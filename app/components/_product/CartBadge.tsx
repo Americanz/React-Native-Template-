@@ -1,5 +1,5 @@
 import React, { FC } from "react";
-import { ViewStyle } from "react-native";
+import { View, ViewStyle, TextStyle } from "react-native";
 import { Badge, Button } from "react-native-paper";
 import { spacing } from "app/theme";
 
@@ -10,36 +10,43 @@ interface CartBadgeProps {
 
 export const CartBadge: FC<CartBadgeProps> = ({ itemCount, onPress }) => {
   return (
-    <Button
-      mode="contained"
-      onPress={onPress}
-      icon="cart"
-      style={$cartButton}
-      labelStyle={$cartButtonLabel}
-    >
-      Cart
+    <View style={$container}>
+      <Button
+        mode="contained"
+        onPress={onPress}
+        icon="cart"
+        style={$cartButton}
+        labelStyle={$cartButtonLabel}
+      >
+        Cart
+      </Button>
       {itemCount > 0 && (
         <Badge size={20} style={$badge}>
           {itemCount}
         </Badge>
       )}
-    </Button>
+    </View>
   );
 };
 
-const $cartButton: ViewStyle = {
+const $container: ViewStyle = {
+  position: "relative",
   marginRight: spacing.xs,
 };
 
-const $cartButtonLabel: ViewStyle = {
+const $cartButton: ViewStyle = {
+  // Видаліть marginRight звідси, якщо він більше не потрібен
+};
+
+const $cartButtonLabel: TextStyle = {
   marginRight: spacing.lg,
 };
 
 const $badge: ViewStyle = {
   position: "absolute",
-  top: 15,
-  left: -25,
-
+  top: -5,
+  right: 8,
+  zIndex: 1,
 };
 
 export default CartBadge;

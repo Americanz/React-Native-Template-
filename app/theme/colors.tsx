@@ -4,12 +4,14 @@ import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 import { palette, Palette } from "./palette";
 import { observer } from "mobx-react-lite";
 import { useStores } from "app/models";
+import { createMaterialPalette } from "./materialPalette";
 
 const getColors = (isDarkMode: boolean) => {
   const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
+  const materialPalette = createMaterialPalette(isDarkMode);
 
   return {
-    palette,
+    palette: materialPalette,
     transparent: "rgba(0, 0, 0, 0)",
     text: paperTheme.colors.onBackground,
     textDim: paperTheme.colors.onSurfaceVariant,
