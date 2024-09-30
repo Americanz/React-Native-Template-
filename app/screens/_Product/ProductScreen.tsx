@@ -70,6 +70,13 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           preset="default"
           onPress={() => navigation.navigate("OrderList")}
         />
+
+        <Button
+          text="CardComponentScreen"
+          style={$button}
+          preset="default"
+          onPress={() => navigation.navigate("CardComponentScreen")}
+        />
       </Screen>
     );
   }

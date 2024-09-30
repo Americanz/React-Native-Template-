@@ -1,9 +1,9 @@
 import React, { createContext, useContext, ReactNode, useEffect } from "react";
 import { useColorScheme } from "react-native";
-import { MD3DarkTheme, MD3LightTheme } from "react-native-paper";
+import { MD3DarkTheme, MD3LightTheme, PaperProvider } from "react-native-paper";
 import { palette, Palette } from "./palette";
 import { observer } from "mobx-react-lite";
-import { userStore } from "../utils/storage/_user/UserStore";
+import { useStores } from "app/models";
 
 const getColors = (isDarkMode: boolean) => {
   const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
@@ -38,33 +38,32 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = observer(
   ({ children }) => {
     const colorScheme = useColorScheme();
+    const { themeStore } = useStores();
 
     useEffect(() => {
-      if (userStore.userInfo.theme === "system") {
-        userStore.setTheme(colorScheme === "dark" ? "dark" : "light");
+      if (themeStore.theme === "system") {
+        themeStore.setTheme(colorScheme === "dark" ? "dark" : "light");
       }
-    }, [colorScheme]);
+    }, [colorScheme, themeStore]);
 
     const isDark =
-      userStore.userInfo.theme === "dark" ||
-      (userStore.userInfo.theme === "system" && colorScheme === "dark");
+      themeStore.theme === "dark" ||
+      (themeStore.theme === "system" && colorScheme === "dark");
 
     const colors = getColors(isDark);
+    const paperTheme = isDark ? MD3DarkTheme : MD3LightTheme;
 
     const contextValue: ThemeContextType = {
-      theme: userStore.userInfo.theme,
+      theme: themeStore.theme,
       isDark,
       colors,
-      toggleTheme: () => {
-        const newTheme = isDark ? "light" : "dark";
-        userStore.setTheme(newTheme);
-      },
-      setTheme: (theme) => userStore.setTheme(theme),
+      toggleTheme: themeStore.toggleTheme,
+      setTheme: themeStore.setTheme,
     };
 
     return (
       <ThemeContext.Provider value={contextValue}>
-        {children}
+        <PaperProvider theme={paperTheme}>{children}</PaperProvider>
       </ThemeContext.Provider>
     );
   }

@@ -31,3 +31,6 @@ export * from "./_Document/_Orders/OrderListScreen";
 export * from "./_Document/_Orders/OrderDetailScreen";
 
 export * from "./_db/DatabaseInfoScreen";
+
+
+export * from "./_Card/CardComponentScreen";

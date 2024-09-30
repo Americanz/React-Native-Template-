@@ -1,9 +1,9 @@
 import React from "react";
 import { ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
-import { Toggle } from "../../components/Toggle";
-import { useStores } from "../../models";
-import { colors, spacing } from "../../theme";
+import { Toggle } from "app/components/Toggle";
+import { useStores } from "app/models";
+import { useTheme } from "app/theme/colors";
 
 interface ThemeToggleProps {
   style?: ViewStyle;
@@ -14,6 +14,7 @@ export const ThemeToggle = observer(function ThemeToggle(
 ) {
   const { style } = props;
   const { themeStore } = useStores();
+  const { colors, isDark } = useTheme();
 
   const $containerStyle: ViewStyle = {
     flexDirection: "row",
@@ -25,10 +26,8 @@ export const ThemeToggle = observer(function ThemeToggle(
     <Toggle
       variant="switch"
       containerStyle={$containerStyle}
-      value={themeStore.theme === "dark"}
-      onValueChange={() =>
-        themeStore.setTheme(themeStore.theme === "dark" ? "light" : "dark")
-      }
+      value={isDark}
+      onValueChange={themeStore.toggleTheme}
       inputOuterStyle={{
         backgroundColor: colors.palette.neutral300,
         borderColor: colors.palette.neutral400,
@@ -43,7 +42,7 @@ export const ThemeToggle = observer(function ThemeToggle(
       label="Dark Mode"
       labelStyle={{
         color: colors.text,
-        marginRight: spacing.md,
+        // marginRight: colors.spacing.,
       }}
     />
   );

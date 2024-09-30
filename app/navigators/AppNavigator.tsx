@@ -58,6 +58,7 @@ export type AppStackParamList = {
   OrderDetail: { orderId: number };
   Cart: undefined;
   DatabaseInfo: undefined;
+  CardComponentScreen: undefined;
 };
 
 /**
@@ -138,6 +139,11 @@ const AppStack = observer(function AppStack() {
           <Stack.Screen name="OrderList" component={Screens.OrderListScreen} />
 
           <Stack.Screen name="Cart" component={Screens.CartScreen} />
+
+          <Stack.Screen
+            name="CardComponentScreen"
+            component={Screens.CardComponentScreen}
+          />
 
           <Stack.Screen
             name="OrderDetail"
