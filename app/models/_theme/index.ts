@@ -3,20 +3,14 @@ import { Instance, types } from "mobx-state-tree";
 export const ThemeStoreModel = types
   .model("ThemeStore")
   .props({
-    theme: types.optional(
-      types.enumeration(["light", "dark", "system"]),
-      "system"
-    ),
+    theme: types.optional(types.enumeration(["light", "dark"]), "light"),
   })
   .actions((self) => ({
-    setTheme(newTheme: "light" | "dark" | "system") {
+    setTheme(newTheme: "light" | "dark") {
       self.theme = newTheme;
-      console.log("New theme set:", newTheme); 
     },
     toggleTheme() {
-      if (self.theme === "light") self.theme = "dark";
-      else if (self.theme === "dark") self.theme = "light";
-      // If the theme is "system", we don't change it when toggling
+      self.theme = self.theme === "light" ? "dark" : "light";
     },
   }));
 

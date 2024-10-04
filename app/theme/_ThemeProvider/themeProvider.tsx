@@ -23,7 +23,6 @@ const createNavigationColors = (isDarkMode: boolean) => {
 };
 
 const getColors = (isDarkMode: boolean) => {
-  console.log("getColors called with isDarkMode:", isDarkMode);
   const paperTheme = isDarkMode ? MD3DarkTheme : MD3LightTheme;
   const materialPalette = createMaterialPalette(isDarkMode);
 
@@ -45,16 +44,7 @@ const getColors = (isDarkMode: boolean) => {
 export type Colors = ReturnType<typeof getColors>;
 export type NavigationColors = ReturnType<typeof createNavigationColors>;
 
-const colorsProxy = new Proxy({} as Colors, {
-  get(target, prop) {
-    if (Object.keys(target).length === 0) {
-      Object.assign(target, getColors(false));
-    }
-    return Reflect.get(target, prop);
-  },
-});
-
-export const colors: Colors = colorsProxy;
+export const colors: Colors = getColors(false);
 
 interface ThemeContextType {
   theme: ThemeType;
@@ -69,29 +59,36 @@ const ThemeContext = createContext<ThemeContextType | null>(null);
 export const ThemeProvider: React.FC<{ children: ReactNode }> = observer(
   ({ children }) => {
     const { themeStore } = useStores();
+
     const isDark = themeStore.theme === "dark";
 
-    useEffect(() => {
-      console.log("Theme effect triggered. Theme:", themeStore.theme, "isDark:", isDark);
+    const updateColors = useMemo(() => {
       const newColors = getColors(isDark);
-      Object.assign(colorsProxy, newColors);
-    }, [themeStore.theme, isDark]);
+      Object.assign(colors, newColors);
+      return newColors;
+    }, [isDark]);
 
     const paperTheme = isDark ? MD3DarkTheme : MD3LightTheme;
     const navigationColors = useMemo(() => createNavigationColors(isDark), [isDark]);
 
-    const navigationTheme: NavigationTheme = {
-      dark: isDark,
-      colors: navigationColors,
-    };
+    const navigationTheme = useMemo(
+      (): NavigationTheme => ({
+        dark: isDark,
+        colors: navigationColors,
+      }),
+      [isDark, navigationColors]
+    );
 
-    const themeContextValue: ThemeContextType = {
-      theme: themeStore.theme as ThemeType,
-      isDark,
-      colors: colorsProxy,
-      setTheme: themeStore.setTheme,
-      navigationColors,
-    };
+    const themeContextValue = useMemo(
+      () => ({
+        theme: themeStore.theme as ThemeType,
+        isDark,
+        colors: updateColors,
+        setTheme: themeStore.setTheme,
+        navigationColors,
+      }),
+      [themeStore.theme, isDark, updateColors, themeStore.setTheme, navigationColors]
+    );
 
     return (
       <ThemeContext.Provider value={themeContextValue}>

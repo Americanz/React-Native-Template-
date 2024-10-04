@@ -77,7 +77,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="components"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -95,7 +95,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="community"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -114,7 +114,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="podcast"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -132,7 +132,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="debug"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -148,7 +148,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="barcode"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -166,7 +166,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="view_list"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),
@@ -184,7 +184,7 @@ export function DemoNavigator() {
           tabBarIcon: ({ focused }) => (
             <Icon
               icon="settings"
-              color={focused ? colors.tint : undefined}
+              color={focused ? colors.tint : colors.text}
               size={30}
             />
           ),

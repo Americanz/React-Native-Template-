@@ -1,12 +1,12 @@
 import React from "react";
 import { View, ViewStyle, TextStyle, TouchableOpacity } from "react-native";
-import { Screen, Text, Icon, Card } from "../../components";
-import { DemoTabScreenProps } from "../../navigators/DemoNavigator";
-import { colors, spacing } from "../../theme";
+import { Screen, Text, Icon, Card } from "app/components";
+import { DemoTabScreenProps } from "app/navigators/DemoNavigator";
+import { colors, spacing } from "app/theme";
 import { observer } from "mobx-react-lite";
-import { userStore } from "../../utils/storage/_user/UserStore";
-import { useStores } from "../../models";
-import { ThemeToggle } from "../../theme/_ThemeProvider/ThemeToggle";
+import { userStore } from "app/utils/storage/_user/UserStore";
+import { useStores } from "app/models";
+import { ThemeToggle } from "app/theme/_ThemeProvider/ThemeToggle";
 
 interface SettingItemProps {
   icon: string;
@@ -15,23 +15,22 @@ interface SettingItemProps {
   rightElement?: React.ReactNode;
 }
 
-const SettingItem = ({
-  icon,
-  label,
-  onPress,
-  rightElement,
-}: SettingItemProps) => {
-  return (
-    <TouchableOpacity
-      style={[$settingItem, { borderBottomColor: colors.border }]}
-      onPress={onPress}
-    >
-      <Icon icon={icon} size={24} color={colors.text} />
-      <Text text={label} style={[$settingLabel, { color: colors.text }]} />
-      {rightElement || <Icon icon="caretRight" size={24} color={colors.text} />}
-    </TouchableOpacity>
-  );
-};
+const SettingItem = observer(
+  ({ icon, label, onPress, rightElement }: SettingItemProps) => {
+    return (
+      <TouchableOpacity
+        style={[$settingItem, { borderBottomColor: colors.border }]}
+        onPress={onPress}
+      >
+        <Icon icon={icon} size={24} color={colors.text} />
+        <Text text={label} style={[$settingLabel, { color: colors.text }]} />
+        {rightElement || (
+          <Icon icon="caretRight" size={24} color={colors.text} />
+        )}
+      </TouchableOpacity>
+    );
+  }
+);
 
 export const SettingsScreen: React.FC<DemoTabScreenProps<
   "SettingsTab"
@@ -39,6 +38,26 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
   const {
     authenticationStore: { logout },
   } = useStores();
+
+  const renderSettingsCard = (title: string, items: SettingItemProps[]) => (
+    <>
+      <Text
+        text={title}
+        preset="subheading"
+        style={[$sectionTitle, { color: colors.text }]}
+      />
+      <Card
+        style={[$card, { backgroundColor: colors.background }]}
+        ContentComponent={
+          <View style={$cardContent}>
+            {items.map((item, index) => (
+              <SettingItem key={index} {...item} />
+            ))}
+          </View>
+        }
+      />
+    </>
+  );
 
   return (
     <Screen
@@ -55,9 +74,8 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
           preset="heading"
           style={[$title, { color: colors.text }]}
         />
+        <ThemeToggle />
       </View>
-
-      <ThemeToggle />
 
       <TouchableOpacity
         style={$userInfo}
@@ -78,75 +96,50 @@ export const SettingsScreen: React.FC<DemoTabScreenProps<
         <Text text="Edit" style={[$editButton, { color: colors.tint }]} />
       </TouchableOpacity>
 
-      <Card
-        style={[$card, { backgroundColor: colors.background }]}
-        ContentComponent={
-          <View style={$cardText}>
-            <SettingItem
-              icon="pin"
-              label="Addresses"
-              onPress={() => navigation.navigate("Addresses")}
-            />
-            <SettingItem
-              icon="car"
-              label="Vehicles"
-              onPress={() => navigation.navigate("Vehicles")}
-            />
-            <SettingItem
-              icon="components"
-              label="Tabs"
-              onPress={() => navigation.navigate("EditUiTab")}
-            />
-          </View>
-        }
-      />
+      {renderSettingsCard("Account", [
+        {
+          icon: "pin",
+          label: "Addresses",
+          onPress: () => navigation.navigate("Addresses"),
+        },
+        {
+          icon: "car",
+          label: "Vehicles",
+          onPress: () => navigation.navigate("Vehicles"),
+        },
+        {
+          icon: "components",
+          label: "Tabs",
+          onPress: () => navigation.navigate("EditUiTab"),
+        },
+      ])}
 
-      <Text
-        text="Settings"
-        preset="subheading"
-        style={[$sectionTitle, { color: colors.text }]}
-      />
-      <Card
-        style={[$card, { backgroundColor: colors.background }]}
-        ContentComponent={
-          <View style={$cardText}>
-            <SettingItem
-              icon="flash"
-              label="Quick Access"
-              onPress={() => navigation.navigate("QuickAccess")}
-            />
-            <SettingItem
-              icon="bell"
-              label="Notifications"
-              onPress={() => navigation.navigate("Notifications")}
-            />
-            <SettingItem icon="lock" label="Security" />
-            <SettingItem icon="map" label="Maps" />
-            <SettingItem
-              icon="globe"
-              label="Language"
-              rightElement={
-                <Text text="English" style={{ color: colors.textDim }} />
-              }
-            />
-          </View>
-        }
-      />
+      {renderSettingsCard("Settings", [
+        {
+          icon: "flash",
+          label: "Quick Access",
+          onPress: () => navigation.navigate("QuickAccess"),
+        },
+        {
+          icon: "bell",
+          label: "Notifications",
+          onPress: () => navigation.navigate("Notifications"),
+        },
+        { icon: "lock", label: "Security" },
+        { icon: "map", label: "Maps" },
+        {
+          icon: "globe",
+          label: "Language",
+          rightElement: (
+            <Text text="English" style={{ color: colors.textDim }} />
+          ),
+        },
+      ])}
 
-      <Text
-        text="Help"
-        preset="subheading"
-        style={[$sectionTitle, { color: colors.text }]}
-      />
-      <Card
-        style={[$card, { backgroundColor: colors.background }]}
-        ContentComponent={
-          <View style={$cardText}>
-            <SettingItem icon="question" label="FAQ" />
-            <SettingItem icon="info" label="Privacy Policy" />
-          </View>
-        }
-      />
+      {renderSettingsCard("Help", [
+        { icon: "question", label: "FAQ" },
+        { icon: "info", label: "Privacy Policy" },
+      ])}
 
       <View style={$buttonContainer}>
         <TouchableOpacity
@@ -168,21 +161,21 @@ const $container: ViewStyle = {
 const $header: ViewStyle = {
   flexDirection: "row",
   alignItems: "center",
+  justifyContent: "space-between",
   marginBottom: spacing.lg,
+  paddingVertical: spacing.sm,
 };
 
 const $title: TextStyle = {
   flex: 1,
-  textAlign: "center",
-  marginRight: 24,
 };
 
 const $card: ViewStyle = {
   marginBottom: spacing.lg,
 };
 
-const $cardText: TextStyle = {
-  marginBottom: spacing.xxs,
+const $cardContent: ViewStyle = {
+  paddingVertical: spacing.xs,
 };
 
 const $userInfo: ViewStyle = {
@@ -197,7 +190,7 @@ const $userTextContainer: ViewStyle = {
 };
 
 const $editButton: TextStyle = {
-  // color is set dynamically
+  fontSize: 14,
 };
 
 const $settingItem: ViewStyle = {
@@ -206,13 +199,11 @@ const $settingItem: ViewStyle = {
   paddingVertical: spacing.md,
   paddingHorizontal: spacing.md,
   borderBottomWidth: 1,
-  // borderBottomColor is set dynamically
 };
 
 const $settingLabel: TextStyle = {
   flex: 1,
   marginLeft: spacing.md,
-  // color is set dynamically
 };
 
 const $sectionTitle: TextStyle = {
@@ -220,11 +211,10 @@ const $sectionTitle: TextStyle = {
 };
 
 const $buttonContainer: ViewStyle = {
-  marginBottom: spacing.md,
+  marginTop: spacing.xl,
 };
 
 const $button: ViewStyle = {
-  marginBottom: spacing.xs,
   paddingVertical: spacing.sm,
   paddingHorizontal: spacing.md,
   borderRadius: 4,

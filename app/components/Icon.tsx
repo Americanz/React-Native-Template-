@@ -15,7 +15,6 @@ const PaperIcon = ({ name, color, size, style }) => (
 );
 
 export const iconRegistry = {
-  // Локальні іконки
   back: require("../../assets/icons/back.png"),
   bell: require("../../assets/icons/bell.png"),
   caretLeft: require("../../assets/icons/caretLeft.png"),

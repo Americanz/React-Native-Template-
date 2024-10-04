@@ -32,12 +32,14 @@ export class ApiError extends Error {
   }
 }
 
+const _url = "https://deploy.srv24.pp.ua"; //"http://192.168.1.55:8000"
+
 const DEFAULT_API_CONFIG: ApiConfig = {
   url: __DEV__
     ? Platform.select({
-        android: "http://192.168.1.55:8000",
-        ios: "http://192.168.1.55:8000",
-        default: "http://192.168.1.55:8000",
+        android: _url,
+        ios: _url,
+        default: _url,
       }) ?? Config.API_URL
     : Config.API_URL,
   timeout: 10000,

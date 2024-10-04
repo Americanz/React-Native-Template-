@@ -3,7 +3,7 @@ import { ViewStyle } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Button, Screen, Text } from "app/components";
 import { DemoTabScreenProps } from "app/navigators/DemoNavigator";
-import { spacing } from "app/theme";
+import { colors, spacing } from "app/theme";
 import { syncService } from "app/db/sync/syncService";
 
 interface ProductScreenProps extends DemoTabScreenProps<"ProductTab"> {}

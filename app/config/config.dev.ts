@@ -7,5 +7,5 @@
  */
 export default {
   API_URL: "https://api.rss2json.com/v1/",
-  API_URL_DEV: "http://192.168.1.55:8000",
+  API_URL_DEV: "https://deploy.srv24.pp.ua",
 }

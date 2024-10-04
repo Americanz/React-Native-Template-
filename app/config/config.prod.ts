@@ -6,5 +6,5 @@
  * https://reactnative.dev/docs/security#storing-sensitive-info
  */
 export default {
-  API_URL: "http://localhost:8000/api/v1",
+  API_URL: "https://deploy.srv24.pp.ua/api/v1",
 };
