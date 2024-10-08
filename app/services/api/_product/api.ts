@@ -1,6 +1,6 @@
 // api/product-manage.ts
 
-import { request } from "../../request";
+import { request } from "app/services/request";
 import * as apiTypes from "app/types/api";
 import * as productTypes from "app/types/product";
 

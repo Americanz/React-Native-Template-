@@ -1,5 +1,5 @@
-import React from "react";
-import { ViewStyle } from "react-native";
+import React, { useState } from "react";
+import { ViewStyle, ActivityIndicator } from "react-native";
 import { observer } from "mobx-react-lite";
 import { Button, Screen, Text } from "app/components";
 import { DemoTabScreenProps } from "app/navigators/DemoNavigator";
@@ -10,8 +10,15 @@ interface ProductScreenProps extends DemoTabScreenProps<"ProductTab"> {}
 
 export const ProductScreen: React.FC<ProductScreenProps> = observer(
   function ProductScreen({ navigation }) {
-    const handleRefresh = () => {
-      syncService.syncAll();
+    const [loading, setLoading] = useState(false);
+
+    const handleRefresh = async () => {
+      setLoading(true);
+      try {
+        await syncService.syncAll();
+      } finally {
+        setLoading(false);
+      }
     };
 
     return (
@@ -40,15 +47,9 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           text="View Categories"
           style={$button}
           preset="default"
-          onPress={() => navigation.navigate("CategoriesScreen")}
-        />
+          onPress={() => navigation.navigate("CategoriesScreen")}        />
 
-        <Button
-          text="Product Reports"
-          style={$button}
-          preset="default"
-          onPress={() => navigation.navigate("ProductReports")}
-        />
+
 
         <Button
           text="Sync Products"
@@ -77,6 +78,7 @@ export const ProductScreen: React.FC<ProductScreenProps> = observer(
           preset="default"
           onPress={() => navigation.navigate("CardComponentScreen")}
         />
+        {loading && <ActivityIndicator size="large" color={colors.palette.primary} />}
       </Screen>
     );
   }
@@ -89,7 +91,6 @@ const $container: ViewStyle = {
 
 const $title: ViewStyle = {
   marginBottom: spacing.xl,
-  textAlign: "center",
 };
 
 const $button: ViewStyle = {
